@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PetTag NFC - Tu Mascota Siempre Segura</title>
+  <style>
+    :root {
+      --primary: #6366F1;
+      --primary-hover: #4F46E5;
+      --bg: #0B0F19;
+      --card-bg: #131B2E;
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
+      --border: #1E293B;
+      --danger: #EF4444;
+      --success: #10B981;
+      --accent: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+      --shadow-soft: 0 20px 40px -10px rgba(0, 0, 0, 0.6);
+      --shadow-glow: 0 0 25px rgba(99, 102, 241, 0.25);
+    }
+
+    [data-theme="light"] {
+      --bg: #F1F5F9;
+      --card-bg: #FFFFFF;
+      --text: #0F172A;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+      --accent: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
+      --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+      --shadow-glow: 0 0 20px rgba(79, 70, 229, 0.15);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; transition: background-color 0.3s, color 0.3s, transform 0.2s; }
+    
+    body { 
+      background-color: var(--bg); 
+      background-image: radial-gradient(var(--border) 1.5px, transparent 1.5px);
+      background-size: 28px 28px;
+      color: var(--text); 
+      min-height: 100vh; 
+      display: flex; 
+      flex-direction: column; 
+    }
+
+    header { 
+      background: var(--card-bg); 
+      border-bottom: 1px solid var(--border); 
+      padding: 16px 32px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      position: sticky; 
+      top: 0; 
+      z-index: 100; 
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .logo { 
+      font-size: 22px; 
+      font-weight: 800; 
+      background: var(--accent); 
+      -webkit-background-clip: text; 
+      -webkit-text-fill-color: transparent; 
+      text-decoration: none; 
+      display: flex; 
+      align-items: center; 
+      gap: 8px; 
+    }
+    
+    .nav-links { display: flex; align-items: center; gap: 20px; }
+    .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 14px; }
+    .nav-link:hover { color: var(--primary); }
+
+    .header-actions { display: flex; align-items: center; gap: 12px; }
+    .theme-toggle { background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 14px; box-shadow: var(--shadow-soft); }
+    
+    .btn-action { 
+      background: var(--accent); 
+      color: white; 
+      border: none; 
+      padding: 10px 18px; 
+      border-radius: 12px; 
+      font-weight: 600; 
+      cursor: pointer; 
+      text-decoration: none; 
+      font-size: 14px; 
+      display: inline-flex; 
+      align-items: center; 
+      gap: 6px; 
+      box-shadow: var(--shadow-glow); 
+    }
+    .btn-action:hover { transform: translateY(-2px); }
+    .btn-logout { background: var(--danger); box-shadow: none; }
+
+    main { max-width: 900px; margin: 0 auto; padding: 32px 16px; width: 100%; flex: 1; }
+    
+    .hero { text-align: center; padding: 40px 16px; }
+    .hero h1 { font-size: 38px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.5px; }
+    .hero p { color: var(--text-muted); font-size: 16px; max-width: 600px; margin: 0 auto 24px; line-height: 1.6; }
+
+    .dashboard-panel { 
+      background: var(--card-bg); 
+      border: 1px solid var(--border); 
+      border-radius: 24px; 
+      padding: 28px; 
+      margin-bottom: 32px; 
+      display: none; 
+      box-shadow: var(--shadow-soft); 
+    }
+    .dashboard-panel.active { display: block; }
+
+    .pet-card-item { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      background: rgba(255, 255, 255, 0.02); 
+      padding: 16px; 
+      border-radius: 16px; 
+      margin-top: 14px; 
+      border: 1px solid var(--border); 
+      flex-wrap: wrap; 
+      gap: 14px; 
+      box-shadow: var(--shadow-soft);
+    }
+    .pet-info { display: flex; align-items: center; gap: 14px; }
+    .pet-thumb { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+    .pet-name { font-weight: 700; font-size: 16px; }
+    .pet-tag-id { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    .btn-profile { background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 8px 14px; border-radius: 10px; font-weight: 600; font-size: 13px; text-decoration: none; box-shadow: var(--shadow-soft); }
+    .btn-profile:hover { border-color: var(--primary); color: var(--primary); }
+
+    .qr-section { 
+      background: var(--card-bg); 
+      border: 1px solid var(--border); 
+      border-radius: 24px; 
+      padding: 28px; 
+      text-align: center; 
+      margin-top: 30px; 
+      box-shadow: var(--shadow-soft); 
+    }
+    .qr-box { 
+      display: inline-block; 
+      background: white; 
+      padding: 14px; 
+      border-radius: 20px; 
+      margin: 16px 0; 
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2); 
+    }
+    .qr-box img { width: 150px; height: 150px; display: block; }
+
+    .store-banner { 
+      background: var(--accent); 
+      color: white; 
+      border-radius: 20px; 
+      padding: 32px; 
+      margin-top: 40px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      flex-wrap: wrap; 
+      gap: 16px; 
+      box-shadow: var(--shadow-glow); 
+    }
+    .store-btn { background: white; color: var(--primary); padding: 12px 24px; border-radius: 12px; text-decoration: none; font-weight: 700; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .store-btn:hover { transform: scale(1.05); }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <header>
+    <a href="index.html" class="logo">🐾 PetTag</a>
+    
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Inicio</a>
+      <a href="tienda.html" class="nav-link">🛒 Marketplace</a>
+    </div>
+
+    <div class="header-actions">
+      <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">☀️</button>
+      
+      <div id="auth-menu">
+        <a href="registro.html" class="btn-action">Registrarse / Entrar</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="dashboard-panel" id="user-dashboard">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+        <div>
+          <h2 style="font-size: 22px; margin-bottom: 4px;">Panel de Control 🎛️</h2>
+          <p id="user-email-display" style="color: var(--text-muted); font-size: 14px;"></p>
+        </div>
+        <button class="btn-action" onclick="alert('Próximamente: Formulario para registrar nueva mascota')">+ Registrar Mascota</button>
+      </div>
+
+      <h3 style="font-size: 16px; margin-top: 20px; margin-bottom: 8px;">Tus Mascotas Registradas</h3>
+      
+      <div class="pet-card-item">
+        <div class="pet-info">
+          <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=150" class="pet-thumb">
+          <div>
+            <div class="pet-name">Max (Perro)</div>
+            <div class="pet-tag-id">ID Placa: #PT-982000</div>
+          </div>
+        </div>
+        <a href="perfil.html" class="btn-profile">Ver Ficha ➔</a>
+      </div>
+
+      <div class="pet-card-item">
+        <div class="pet-info">
+          <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&q=80&w=150" class="pet-thumb">
+          <div>
+            <div class="pet-name">Luna (Gatita)</div>
+            <div class="pet-tag-id">ID Placa: #PT-451230</div>
+          </div>
+        </div>
+        <a href="perfil_luna.html" class="btn-profile">Ver Ficha ➔</a>
+      </div>
+    </section>
+
+    <section class="hero">
+      <h1>La seguridad de tu mascota en un solo toque</h1>
+      <p>Placas inteligentes NFC y códigos QR diseñados para garantizar un retorno seguro a casa en caso de extravío.</p>
+      <a href="perfil.html" class="btn-action" style="padding: 14px 28px; font-size: 16px;">🔍 Simular Escaneo de Placa</a>
+    </section>
+
+    <div class="qr-section">
+      <h3 style="font-size: 18px; margin-bottom: 4px;">Generador Automático de QR 📱</h3>
+      <p style="font-size: 13px; color: var(--text-muted);">La página genera dinámicamente el código QR listo para imprimir:</p>
+      
+      <div class="qr-box">
+        <img id="dynamic-qr" src="" alt="Código QR Dinámico">
+      </div>
+      <div>
+        <span id="qr-label" style="font-size: 14px; font-weight: 700; color: var(--primary);"></span>
+      </div>
+    </div>
+
+    <div class="store-banner">
+      <div>
+        <h3 style="font-size: 20px; margin-bottom: 6px;">¿Necesitas adquirir una placa NFC?</h3>
+        <p style="font-size: 14px; opacity: 0.9;">Explora nuestros modelos resistentes al agua y de alta durabilidad.</p>
+      </div>
+      <a href="tienda.html" class="store-btn">Ver Marketplace ➔</a>
+    </div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA5_UvKicVFHJO1iKj2TGgRfaALgYgiyTE",
+      authDomain: "pettag-4634c.firebaseapp.com",
+      projectId: "pettag-4634c",
+      storageBucket: "pettag-4634c.firebasestorage.app",
+      messagingSenderId: "502143406601",
+      appId: "1:502143406601:web:236775336e81ca3c87ded8"
+    };
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    const urlActual = window.location.href.replace('index.html', '') + 'perfil.html';
+    document.getElementById('dynamic-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(urlActual)}`;
+    document.getElementById('qr-label').textContent = "Enlace: Max (#PT-982000)";
+
+    firebase.auth().onAuthStateChanged((user) => {
+      const authMenu = document.getElementById('auth-menu');
+      const userDashboard = document.getElementById('user-dashboard');
+      const emailDisplay = document.getElementById('user-email-display');
+
+      if (user) {
+        emailDisplay.textContent = `Conectado como: ${user.email}`;
+        userDashboard.classList.add('active');
+        authMenu.innerHTML = `<button class="btn-action btn-logout" onclick="logout()">Cerrar Sesión</button>`;
+      } else {
+        userDashboard.classList.remove('active');
+        authMenu.innerHTML = `<a href="registro.html" class="btn-action">Registrarse / Entrar</a>`;
+      }
+    });
+
+    function logout() {
+      firebase.auth().signOut().then(() => {
+        window.location.reload();
+      });
+    }
+
+    function toggleTheme() {
+      const body = document.body;
+      const themeBtn = document.getElementById('theme-btn');
+      if (body.getAttribute('data-theme') === 'dark') {
+        body.setAttribute('data-theme', 'light');
+        themeBtn.textContent = '🌙';
+      } else {
+        body.setAttribute('data-theme', 'dark');
+        themeBtn.textContent = '☀️';
+      }
+    }
+  </script>
+</body>
+</html>

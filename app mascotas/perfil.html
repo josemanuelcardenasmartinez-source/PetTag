@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ficha de Max - PetTag NFC</title>
+  <style>
+    :root {
+      --primary: #6366F1;
+      --bg: #0B0F19;
+      --card-bg: #131B2E;
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
+      --border: #1E293B;
+      --success: #10B981;
+      --accent: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+      --shadow-soft: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    }
+    [data-theme="light"] {
+      --bg: #F1F5F9;
+      --card-bg: #FFFFFF;
+      --text: #0F172A;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+      --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; transition: background-color 0.3s, color 0.3s; }
+    body { 
+      background-color: var(--bg); 
+      background-image: radial-gradient(var(--border) 1.5px, transparent 1.5px);
+      background-size: 28px 28px;
+      color: var(--text); 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      padding: 24px 16px; 
+      min-height: 100vh; 
+    }
+    .top-bar { width: 100%; max-width: 420px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .back-btn { color: var(--primary); text-decoration: none; font-weight: 600; font-size: 14px; }
+    .theme-toggle { background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; box-shadow: var(--shadow-soft); }
+
+    .container { width: 100%; max-width: 420px; background: var(--card-bg); border-radius: 32px; overflow: hidden; box-shadow: var(--shadow-soft); border: 1px solid var(--border); margin-bottom: 24px; }
+    .alert-banner { background-color: rgba(239, 68, 68, 0.15); border-bottom: 1px solid rgba(239, 68, 68, 0.3); color: #EF4444; padding: 12px 16px; text-align: center; font-size: 14px; font-weight: 700; }
+    
+    .pet-header { text-align: center; padding: 24px 16px 16px; }
+    .avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin: 0 auto 12px; display: block; }
+    .pet-name { font-size: 26px; font-weight: 800; }
+    .pet-breed { font-size: 14px; color: var(--text-muted); margin-top: 2px; }
+
+    .badge-container { display: flex; justify-content: center; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .badge { background: rgba(99, 102, 241, 0.15); color: var(--primary); padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 600; }
+
+    .info-section { padding: 0 20px 20px; }
+    .info-card { background: rgba(255,255,255,0.02); border-radius: 20px; padding: 16px; margin-bottom: 16px; border: 1px solid var(--border); box-shadow: var(--shadow-soft); }
+    .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: var(--text-muted); font-weight: 500; }
+    .info-value { font-weight: 600; text-align: right; }
+
+    .actions { display: flex; flex-direction: column; gap: 12px; padding: 0 20px 24px; }
+    .btn { width: 100%; padding: 14px; border-radius: 14px; border: none; font-weight: 700; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+    .btn-call { background: var(--accent); color: white; box-shadow: 0 4px 15px rgba(99,102,241,0.3); }
+    .btn-whatsapp { background-color: #10B981; color: white; }
+    .btn-location { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--border); box-shadow: var(--shadow-soft); }
+    .location-status { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 4px; }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <div class="top-bar">
+    <a href="index.html" class="back-btn">← Volver al Inicio</a>
+    <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">☀️</button>
+  </div>
+
+  <div class="container">
+    <div class="alert-banner">⚠️ ¡Perro reportado como extraviado!</div>
+
+    <div class="pet-header">
+      <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=300" class="avatar">
+      <h1 class="pet-name">Max</h1>
+      <p class="pet-breed">Golden Retriever • 3 años</p>
+      
+      <div class="badge-container">
+        <span class="badge">Macho</span>
+        <span class="badge">Vacunado</span>
+        <span class="badge">ID: #PT-982000</span>
+      </div>
+    </div>
+
+    <div class="info-section">
+      <div class="info-card">
+        <div class="info-row"><span class="info-label">Dueño:</span><span class="info-value">José Cárdenas</span></div>
+        <div class="info-row"><span class="info-label">Alergias:</span><span class="info-value">Ninguna</span></div>
+        <div class="info-row"><span class="info-label">Carácter:</span><span class="info-value">Muy amigable</span></div>
+        <div class="info-row"><span class="info-label">Veterinaria:</span><span class="info-value">VetCentral (+58 412-9999999)</span></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a href="tel:+584120000000" class="btn btn-call">📞 Llamar al Dueño (Max)</a>
+      <a href="https://wa.me/584120000000?text=Hola,%20encontré%20a%20Max" target="_blank" class="btn btn-whatsapp">💬 Enviar WhatsApp</a>
+      <button onclick="compartirUbicacion()" class="btn btn-location" id="btn-gps">📍 Enviar mi Ubicación GPS</button>
+      <div class="location-status" id="gps-status"></div>
+    </div>
+  </div>
+
+  <script>
+    function toggleTheme() {
+      const body = document.body;
+      const themeBtn = document.getElementById('theme-btn');
+      if (body.getAttribute('data-theme') === 'dark') {
+        body.setAttribute('data-theme', 'light');
+        themeBtn.textContent = '🌙';
+      } else {
+        body.setAttribute('data-theme', 'dark');
+        themeBtn.textContent = '☀️';
+      }
+    }
+
+    function compartirUbicacion() {
+      const status = document.getElementById('gps-status');
+      if (!navigator.geolocation) {
+        status.textContent = 'Geolocalización no soportada.';
+        return;
+      }
+      status.textContent = 'Obteniendo ubicación de Max...';
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const url = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+        window.open(`https://wa.me/584120000000?text=Encontré%20a%20Max%20aquí:%20${encodeURIComponent(url)}`, '_blank');
+        status.textContent = '¡Ubicación enviada!';
+      });
+    }
+  </script>
+</body>
+</html>

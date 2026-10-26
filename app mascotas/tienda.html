@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PetTag NFC - Tienda Oficial</title>
+  <style>
+    :root {
+      --primary: #6366F1;
+      --bg: #0B0F19;
+      --card-bg: #131B2E;
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
+      --border: #1E293B;
+      --success: #10B981;
+      --accent: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+      --shadow-soft: 0 20px 40px -10px rgba(0, 0, 0, 0.6);
+      --shadow-glow: 0 0 25px rgba(99, 102, 241, 0.25);
+    }
+
+    [data-theme="light"] {
+      --bg: #F1F5F9;
+      --card-bg: #FFFFFF;
+      --text: #0F172A;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+      --accent: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
+      --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+      --shadow-glow: 0 0 20px rgba(79, 70, 229, 0.15);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; transition: background-color 0.3s, color 0.3s, transform 0.2s; }
+    
+    body { 
+      background-color: var(--bg); 
+      background-image: radial-gradient(var(--border) 1.5px, transparent 1.5px);
+      background-size: 28px 28px;
+      color: var(--text); 
+      min-height: 100vh; 
+      display: flex; 
+      flex-direction: column; 
+    }
+
+    header { 
+      background: var(--card-bg); 
+      border-bottom: 1px solid var(--border); 
+      padding: 16px 32px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      position: sticky; 
+      top: 0; 
+      z-index: 100; 
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .logo { font-size: 22px; font-weight: 800; background: var(--accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .nav-links { display: flex; align-items: center; gap: 20px; }
+    .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 14px; }
+    .nav-link:hover { color: var(--primary); }
+
+    .header-actions { display: flex; align-items: center; gap: 12px; }
+    .theme-toggle { background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 14px; box-shadow: var(--shadow-soft); }
+
+    main { max-width: 900px; margin: 0 auto; padding: 32px 16px; width: 100%; flex: 1; }
+
+    .shop-header { text-align: center; margin-bottom: 32px; }
+    .shop-header h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+    .shop-header p { color: var(--text-muted); font-size: 15px; }
+
+    .product-card { 
+      background: var(--card-bg); 
+      border: 1px solid var(--border); 
+      border-radius: 24px; 
+      padding: 24px; 
+      box-shadow: var(--shadow-soft); 
+      display: grid; 
+      grid-template-columns: 1fr 1fr; 
+      gap: 24px; 
+      margin-bottom: 32px; 
+    }
+    @media(max-width: 600px) { .product-card { grid-template-columns: 1fr; } }
+
+    .product-img { width: 100%; height: 220px; object-fit: cover; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    
+    .price-tag { font-size: 24px; font-weight: 800; color: var(--primary); margin: 12px 0; }
+
+    .form-group { margin-bottom: 12px; }
+    .form-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+    .form-select, .form-input { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 14px; outline: none; }
+
+    .qty-controls { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
+    .qty-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 700; cursor: pointer; }
+    .qty-val { font-weight: 700; font-size: 16px; }
+
+    .btn-cart { 
+      width: 100%; 
+      background: var(--accent); 
+      color: white; 
+      border: none; 
+      padding: 14px; 
+      border-radius: 12px; 
+      font-weight: 700; 
+      font-size: 15px; 
+      cursor: pointer; 
+      box-shadow: var(--shadow-glow); 
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <header>
+    <a href="index.html" class="logo">🐾 PetTag</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Inicio</a>
+      <a href="tienda.html" class="nav-link" style="color:var(--primary);">🛒 Marketplace</a>
+    </div>
+    <div class="header-actions">
+      <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">☀️</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="shop-header">
+      <h1>Marketplace de Placas NFC</h1>
+      <p>Personaliza y pide tu placa inteligente con entrega a domicilio.</p>
+    </div>
+
+    <div class="product-card">
+      <!-- Imagen dinámica según el producto seleccionado -->
+      <img id="product-img" src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&q=80&w=400" class="product-img" alt="Placa NFC">
+      
+      <div>
+        <h2 style="font-size: 20px;">Placa Inteligente NFC Personalizada</h2>
+        <div class="price-tag" id="display-price">$12.00</div>
+
+        <div class="form-group">
+          <label class="form-label">Material de la Placa</label>
+          <select class="form-select" id="material-select" onchange="updateProductDetails()">
+            <option value="10" data-img="img/placa 1.jpg">Placa solo con codigo QR ($10.00)</option>
+            <option value="15" data-img="img/placa 2.jpg">Placa con QR y NFC ($15.00)</option>
+            <option value="20" data-img="img/placa 3.jpg">Placa con QR, NFC y Rastreador ($20.00)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nombre impreso en la Placa</label>
+          <input type="text" class="form-input" id="pet-name-input" placeholder="Ej: Max, Luna...">
+        </div>
+
+        <div class="qty-controls">
+          <button class="qty-btn" onclick="changeQty(-1)">-</button>
+          <span class="qty-val" id="qty-display">1</span>
+          <button class="qty-btn" onclick="changeQty(1)">+</button>
+        </div>
+
+        <button class="btn-cart" onclick="sendOrderWhatsApp()">💬 Pedir por WhatsApp</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let qty = 1;
+
+    function updateProductDetails() {
+      const select = document.getElementById('material-select');
+      const selectedOption = select.options[select.selectedIndex];
+      
+      // Cambiar precio total
+      const unitPrice = parseFloat(selectedOption.value);
+      document.getElementById('display-price').textContent = `$${(unitPrice * qty).toFixed(2)}`;
+      
+      // Cambiar imagen dinámicamente según el producto seleccionado
+      const newImg = selectedOption.getAttribute('data-img');
+      document.getElementById('product-img').src = newImg;
+    }
+
+    function changeQty(delta) {
+      if (qty + delta >= 1) {
+        qty += delta;
+        document.getElementById('qty-display').textContent = qty;
+        updateProductDetails();
+      }
+    }
+
+    function sendOrderWhatsApp() {
+      const materialSelect = document.getElementById('material-select');
+      const materialText = materialSelect.options[materialSelect.selectedIndex].text;
+      const petName = document.getElementById('pet-name-input').value || 'Sin nombre especificado';
+      const totalPrice = document.getElementById('display-price').textContent;
+
+      const mensaje = `Hola! Quiero pedir una placa PetTag NFC:\n- *Producto:* ${materialText}\n- *Nombre de mascota:* ${petName}\n- *Cantidad:* ${qty}\n- *Total:* ${totalPrice}`;
+      window.open(`https://wa.me/584120000000?text=${encodeURIComponent(mensaje)}`, '_blank');
+    }
+
+    function toggleTheme() {
+      const body = document.body;
+      const themeBtn = document.getElementById('theme-btn');
+      if (body.getAttribute('data-theme') === 'dark') {
+        body.setAttribute('data-theme', 'light');
+        themeBtn.textContent = '🌙';
+      } else {
+        body.setAttribute('data-theme', 'dark');
+        themeBtn.textContent = '☀️';
+      }
+    }
+  </script>
+</body>
+</html>
